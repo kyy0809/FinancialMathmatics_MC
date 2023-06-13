@@ -1,0 +1,583 @@
+\documentclass[14pt]{extarticle}
+
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{graphicx} 
+\usepackage{tabularx}
+\usepackage{url}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{CJKutf8}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{caption}
+\usepackage{subfigure}
+\usepackage{float}
+\newtheorem{question}{Question}
+\newtheorem{activity}{Activity}
+\newtheorem{theorem}{Theorem}
+\newtheorem{objective}{Objective}
+\newtheorem{lemma}{Lemma}
+\newtheorem{fact}{Fact}
+\newtheorem{claim}{Claim}
+\newtheorem{corollary}{Corollary}
+\newtheorem{prop}{Proposition}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{definition}{Definition}
+\newtheorem{obs}{Observation}
+
+
+\textheight=22.5cm
+\topmargin=-1cm
+\oddsidemargin=5mm 
+\textwidth=16cm
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%===========================================================================%%
+
+\pagenumbering{gobble}
+\title{\includegraphics{XJTLULOGO.png} \\ \vspace{20mm} Financial Engineering MTH319 \\  Coursework Assignment 2\ \vspace{10mm}
+
+\vspace{20mm}}
+\date{\today}
+\author{Yu Kong ID 1718810 }
+
+
+\begin{document}
+
+
+\maketitle
+
+\newpage
+
+\abstract{ \setlength{\baselineskip}{20pt}
+
+
+Firstly, this coursework used the Monte Carlo simulation to simulate the CIR short-rate model in a standard approach and variance reduction method respectly with the parameters $\sigma$,a and b estimated from the given "Government Bond Yield"~\\
+
+Secondly, the dynamics of bond price, yields and the term structure are also been estimated with plots by using the result of short-rate paths conducted in first part.~\\
+
+Finally, based on the non-arbitrage condition of HJM model and the dynamic expression of short-term interest rate under CIR model, the drift term and diffusion term of Forward interest rate are deduced. Moreover, Monte Carlo simulation result for forward rates implied from the CIR Model and the plots of drift term and diffusion term will also be conducted.
+
+}
+
+\newpage 
+\tableofcontents
+\newpage
+
+\pagenumbering{arabic}
+
+\section{Part 1}
+
+\subsection{General methodology for MC simulation process }\setlength{\baselineskip}{20pt}
+\begin{itemize}
+  \item [1)]  we evenly subdivide the interval [0,T] into N subintervals and let $t_i=i\frac{N}{T} $ for i=1...n, e.g., $\Delta$t=$t_i$-$t_{i-1}$:
+By applying the Euler scheme, we may generate the paths of r(t):
+$$ r_{t_{i+1}} =  r_{t_{i}} +a(b-r_{t_{i}} ) \Delta+\sigma\sqrt{\Delta}\epsilon $$
+
+\item [2)]The algorithm for variance reduction methods:\\
+
+   The sequence of Y is generated from $U_1$, $U_2$,..., $U_n$ and the sequence of X is generated from $1-U_1$,  $1-U_2$,...,$1-U_n$.\\
+   
+   The pairs ($X_i$, $Y_i$) (i=1,..., n), are i.i.d. and for each i, $X_i$ and $Y_i$ have the same distribution.\\
+   
+   Given the sample sequence of (X, Y), the path of a new random variable is defined:\\
+   $$Z_i=\frac{X_i+Y_i}{2} $$\\
+   where the i=1,2...n.
+   
+   Its estimator is the average of all observations:\\
+   $$\mathbb{E}[Z]=\frac{1}{n}\sum_{i = 1}^{n}Z_i =\sum_{i = 1}^{n}\frac{X_i+Y_i}{2} $$
+   
+   And the variance:
+   $$Var[Z]=Var[\frac{X+Y}{2}]=\frac{1}{4}(Var[X]+Var[Y]+2Cov(X,Y) $$\\
+   
+
+\item [3)]The structure of CIR short-rate model:
+
+\begin{itemize}
+\item[-] In CIR’s model, the risk-neutral process for r is given by:
+$$ dr(t)=a(b-r(t))dt+\sigma\sqrt{r(t)}dW_t  $$
+where:
+\item[.]a is the mean reversion rate
+\item[.]b is the long-term mean of the short rate
+\item[.] $\sigma$is the diffusion (volatility) parameter\\
+\end{itemize}
+
+\begin{itemize}
+\item [4)] The zero-coupon bond prices P(t,T) in CIR model are given:
+$$P(t,T)= \mathbb{E}^Q[e^{\int_t^T  rs ds}]=e^{A(t,T)-B(t,T)r(T)} $$
+where:
+\item[*]$\gamma$:
+$$ \gamma=\sqrt{a^2+\sigma^2}$$
+\item[*]B(t,T):
+$$   B(t,T)=\frac{ 2(e^{\gamma(T-t)}-1)    } { (\gamma+a)(e^{\gamma(T-t)}-1 ) +2\gamma  }   $$
+
+\item[*]A(t,T):
+$$  A(t,T)=\ln({\frac{ 2\gamma e^{\frac{(a+\gamma)(T-t)}{2}} }{(\gamma+a)(e^{\gamma(T-t)}-1 ) +2\gamma    }   } )^{\frac{2ab}{\sigma^2}}$$\\
+\end{itemize}
+
+\begin{itemize}
+\item [5)]The yield to maturity y(t,T) is given by:
+$$ y(t,T)= -\frac{1}{T-t}\ln(P(t,T)) =-\frac{A(t,T)-B(t,T)r(T)}{T-t}  $$
+\end{itemize}
+
+  
+  
+\end{itemize}
+\newpage
+\begin{itemize}
+    \item [6)] the MC Steps for bond prices and yields:
+    \begin{itemize}
+        \item [1)]we evenly subdivide the interval [0,T] into N sub-intervals and let $t_i=i\frac{N}{T} $ for i=1...n, e.g., $\Delta$t=$t_i$-$t_{i-1}$.\\
+        \item[2)]Initialize r(0)\\
+        \item[3)]In each simulation ($m\leq M$), at time $t_{i+1}$
+        \begin{itemize}
+            \item [.]Generate the random variable $\epsilon$
+           $$ \varepsilon \sim N(0, 1)$$
+           \item[.]Update the short rate path r(ti+1), based on the states at $t_i$
+           $$ r_{t_{i+1}}^m =  r_{t_{i}}^m +a(b-r_{t_{i}}^m ) \Delta+\sigma\sqrt{\Delta}\epsilon $$
+           \item[.]Calculate the zero-coupon bond price $P^m(t_i,T)$
+           $$P^m(t_i,T)=e^{A(t_i,T)-B(t+i,T)r_{t_i}^m(T)} $$
+           \item[.]The paths of the yield-to-maturity y(ti,T) are obtained:
+           $$ y^m(t_i,T)=-\frac{A(t_i,T)-B(t_i,T)r_{t_i}^m(T)}{T-t_i}  $$
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\subsection{The general method for construct Term Structure}
+\begin{itemize}
+    \item [1.]using the MC method mentioned before to simulated a matrix of short-rate with dimension (number of stpes+1)$\ast$ number of paths.\\
+    
+    \item[2.]implementing the method to construct simulation for bond price and yield. Things need to mentioned here are: the parameters A and B in the simulation of CIR model are actually vectors with dimension of (number of steps)$\ast$ 1 and in the iteration, the value of A and B will be filled up by using the algorithm $B(t,T)=\frac{ 2(e^{\gamma(T-t)}-1)    } { (\gamma+a)(e^{\gamma(T-t)}-1 ) +2\gamma  } $ and $A(t,T)=\ln({\frac{ 2\gamma e^{\frac{(a+\gamma)(T-t)}{2}} }{(\gamma+a)(e^{\gamma(T-t)}-1 ) +2\gamma    }   } )^{\frac{2ab}{\sigma^2}} $ with $\gamma=\sqrt{a^2+\sigma^2} $ and the time measure iteration is $\tau=T-t_i $.\\
+    
+    \item[3.]The horizontal axis of term structure is the different time to maturity and the vertical axis of term structure is a list of different short rate so that there need a transpose when implementing the short rate matrix simulated before as the input data for constructing term structure.\\
+    
+    \item[4.]Finally, when given a list of different maturities, transposed short rates, predetermined parameters and a random selected number of steps (could be any number of steps as long as within the range of steps been set in the predetermined parameters) which we want to use to construct the term structure.
+\end{itemize}
+
+
+
+
+\newpage
+\subsection{The drift and diffusion term of the forward rate F(t,T) under CIR model}
+\begin{itemize}
+    \item [1)]For CIR’ model, the dynamics of r(t) is given by:
+    $$dr(t)=a(b-r(t))dt+\sigma \sqrt{r(t)} dW_t^Q        $$
+    \item[2)]The zero-coupon bond price P(t,T) is given by:
+    $$P(t,T)= \mathbb{E}^Q[e^{\int_t^T  rs ds}]=e^{A(t,T)-B(t,T)r(t)} $$
+    \item[3)]Given the setup, forward rates can be expressed as:
+   $$ F(t,T)= -\frac{ \partial }{ \partial T} \ln P(t,T) = -\frac{ \partial }{ \partial T} \ln{(e^{A(t,T)-B(t,T)r(t)})} =r(t)B_T(t,T)-A_T(t,T)                          $$
+    \item[4)]So we have the forward rate differential:
+    $$ dF(t,T)=[-\frac{ \partial A_T (T,t) }{ \partial t}+B_T(t,T)[ab-ar(t)] + \frac{ \partial B_T (T,t) }{ \partial t} r(t)   ]+B_T(t,T)\sigma \sqrt{r(t)}dW_t^Q           $$
+\end{itemize}
+~\\
+\begin{itemize}
+    \item[(1*)]Now we first use partial derivatives to find out $B_T(t,T) $:
+    $$ \frac{ \partial B_T (T,t) }{ \partial T}$$
+$$=\frac{ 2e^{\gamma (T-t)}\gamma [(\gamma+a)e^{r(T-t)}+\gamma-a  ]-[2e^{r(T-t)}-2][(\gamma+a)e^{r(T-t)}\gamma]    }   { [(\gamma+a) e^{\gamma(T-t)}+\gamma+a]^2 } $$
+
+$$  =\frac{2\gamma(\gamma+a)e^{2\gamma(T-t)}+2\gamma(\gamma-a)e^{\gamma(T-t)}  -(2\gamma(\gamma+a)) e^{2\gamma(T-t)} -2\gamma(\gamma+a)e^{\gamma(T-t)} } {[(\gamma+a) e^{\gamma(T-t)}+\gamma+a]^2}     $$
+
+$$ =\frac{2\gamma (\gamma-a)e^{\gamma(T-t)}+2\gamma (\gamma+a)  e^{\gamma(T-t)}} {[(\gamma+a) e^{\gamma(T-t)}+\gamma+a]^2}       $$
+
+$$ \frac{ \partial B_T (T,t) }{ \partial T} =\frac{4\gamma^2 e^{\gamma(T-t)} } {[(\gamma+a) e^{\gamma(T-t)}+\gamma+a]^2} $$
+
+\end{itemize}
+~\\
+\begin{itemize}
+    \item [(2*)]Then we try to figure out:
+    $$ \frac{ \partial B_T (T,t) }{ \partial t}$$
+    $ =\frac{[-\gamma (4\gamma^2) e^{\gamma(T-t)}] [(\gamma+a) e^{\gamma(T-t)}+\gamma+a]^2 -\{2[ (\gamma+a) e^{\gamma(T-t)}+\gamma-a][-\gamma(\gamma+a)e^{\gamma(T-t)}] \}(4\gamma^2e^{\gamma(T-t)}) }    {[(\gamma+a) e^{\gamma(T-t)}+\gamma+a]^4}   $
+~\\
+    \begin{itemize}
+        \item [(2*-1)] For simplicity we denoted "part 1" as:
+        $$ [-\gamma (4\gamma^2) e^{\gamma(T-t)}] [(\gamma+a) e^{\gamma(T-t)}+\gamma+a]^2$$
+        Therefore further derivation is given to the "part 1":
+        $$ part 1 = -4\gamma^3 e^{\gamma(T-t)} [(\gamma+a)^2e^{2\gamma(T-t)}+2(\gamma^2-a^2)e^{\gamma(T-t)}+(\gamma+a)^2]                $$
+        $$=-4\gamma^3(\gamma+a)^2 e^{3\gamma(T-t)} -8\gamma^3(\gamma^2-a^2)e^{2\gamma(T-t)}-4\gamma^3(\gamma-a)^3 e^{\gamma(T-t)}           $$
+    \end{itemize}
+    ~\\
+    \begin{itemize}
+        \item [(2*-2)] For simplicity we denoted "part 2" as:
+        $$2[ (\gamma+a) e^{\gamma(T-t)}+\gamma-a]  *[-\gamma(\gamma+a)e^{\gamma(T-t)}]*4\gamma^2e^{\gamma(T-t)}$$
+        Therefore further derivation is given to the "part 2":
+        $$ part 2=8\gamma^2e^{\gamma(T-t)}*[-\gamma(\gamma+a)e^{\gamma(T-t)}]*[(\gamma+a)e^{\gamma(T-t)}+\gamma-a]  $$
+        $$=-8\gamma^3e^{2\gamma(T-t)}[(\gamma+a)e^{\gamma(T-t)}+\gamma-a]$$
+        $$=-8\gamma^3(\gamma+a)^2e^{3\gamma(T-t)} -8\gamma^3(\gamma^2-a^2)e^{2\gamma(T-t)}$$
+    \end{itemize}
+    ~\\
+    \begin{itemize}
+        \item [(2*-3)] "part 1"-"part 2" equals:
+        
+        $=-4\gamma^3(\gamma+a)^2 e^{3\gamma(T-t)} -8\gamma^3(\gamma^2-a^2)e^{2\gamma(T-t)}-4\gamma^3(\gamma-a)^2 e^{\gamma(T-t)}+8\gamma^3(\gamma+a)^2e^{3\gamma(T-t)}+8\gamma^3(\gamma^2-a^2)e^{2\gamma(T-t)} $
+        ~\\
+        $$ = -4\gamma^3(\gamma+a)^2 e^{3\gamma(T-t)}+ 8\gamma^3(\gamma+a)^2e^{3\gamma(T-t)}-4\gamma^3(\gamma-a)^2 e^{\gamma(T-t)}   $$
+        $$=4\gamma^3(\gamma+a)^2e^{3\gamma(T-t)}-4\gamma^3(\gamma-a)^2e^{\gamma(T-t)} $$
+    \end{itemize}
+    Finally, the $\frac{ \partial B_T (T,t) }{ \partial t} $ is:
+    $$  \frac{ \partial B_T (T,t) }{ \partial t}= \frac{4\gamma^3(\gamma+a)^2e^{3\gamma(T-t)}-4\gamma^3(\gamma-a)^2e^{\gamma(T-t)}} {[(\gamma+a) e^{\gamma(T-t)}+\gamma+a]^4}$$
+    
+\end{itemize}
+~\\
+\begin{itemize}
+    \item [(3*)]Now we first use partial derivatives to find out $A_T(t,T) $:
+    ~\\
+    \begin{itemize}
+        \item [3*-1] Firstly, we try to find the $A_T(t,T) $
+    $$  A(t,T)=\ln({\frac{ 2\gamma e^{\frac{(a+\gamma)(T-t)}{2}} }{(\gamma+a)(e^{\gamma(T-t)}-1 ) +2\gamma    }   } )^{\frac{2ab}{\sigma^2}}$$
+    
+    $$ A(t,T)={\frac{2ab}{\sigma^2}}  \ln({\frac{ 2\gamma e^{\frac{(a+\gamma)(T-t)}{2}} }{(\gamma+a)(e^{\gamma(T-t)}-1 ) +2\gamma    }   } ) $$
+    
+    $$A_T(t,T)= \frac{\frac{2ab}{\sigma^2} *    d\{({\frac{ 2\gamma e^{\frac{(a+\gamma)(T-t)}{2}} }{(\gamma+a)(e^{\gamma(T-t)}-1 ) +2\gamma  }   })\}_T } { \frac{ 2\gamma e^{\frac{(a+\gamma)(T-t)}{2}} }{(\gamma+a)(e^{\gamma(T-t)}-1 ) +2\gamma    } }                $$
+    ~\\
+    Denotes M as :
+    $$ \frac{ 2\gamma e^{\frac{(a+\gamma)(T-t)}{2}} }{(\gamma+a)(e^{\gamma(T-t)}-1 ) +2\gamma    } $$
+    ~\\
+    Then the numerator $\frac{ \partial M}{ \partial T}$:
+    $$\frac{ \partial M}{ \partial T}  = \frac{\gamma(\gamma+a)e^{T( \frac{a+\gamma}{2})} [(\gamma+a)e^{\gamma(T-t)}+\gamma-a] -[2\gamma e^{(\gamma+a)\frac{T-t}{2}} \gamma(\gamma+a)e^{\gamma(T-t)}]} {[(\gamma+a)e^{\gamma(T-t)}+\gamma-a]^2  }               $$
+    
+    $$\frac{ \partial M}{ \partial T}  = \frac{\gamma(\gamma+a)^2 e^{T(\gamma +\frac{\gamma+a}{2} )-\gamma t}+\gamma(\gamma^2-a^2)e^{T(\frac{\gamma+a}{2})}-2\gamma^2(\gamma+a)e^{(T-t)(\gamma+\frac{a+\gamma}{2})} }    {[(\gamma+a)e^{\gamma(T-t)}+\gamma-a]^2 }  $$
+    
+    Next the $\frac{ \partial A}{ \partial T}$ will be:
+    $$ \frac{ \partial A}{ \partial T}=\frac{ \partial M}{ \partial T} (\frac{ 2\gamma e^{\frac{(a+\gamma)(T-t)}{2}} }{(\gamma+a)(e^{\gamma(T-t)}-1 ) +2\gamma    })^{-1} * \frac{2ab}{\sigma^2}        $$
+    \newpage
+    Finally, after simplification:
+    $$\frac{ \partial A}{ \partial T} =\frac{ab}{\sigma^2}   * \frac{(\gamma+a)e^{\gamma(T-t)}+(\gamma-a)-2\gamma e^{\gamma T-(\frac{a+3\gamma}{2})t}} {
+    e^{rT-(\frac{a+3\gamma}{2})t}+(\frac{\gamma-a}{\gamma+a}) e^{-(\frac{a+\gamma}{2}) t}                }              $$
+
+    \end{itemize}
+    ~\\
+    
+     \begin{itemize}
+      \item [3*-2] Secondly, we try to find the $ \frac{ \partial A_T(t,T)}{ \partial t}  $
+      $$\frac{ \partial A_T(t,T)}{ \partial t}= $$
+      $\frac{ [-\gamma(\gamma+a)e^{\gamma(T-t)}-\frac{a+3\gamma}{2} (-2\gamma)e^{\gamma T-(\frac{a+3\gamma}{2})t}] [e^{\gamma T-t(\frac{a+3\gamma}{2})}+ (\frac{\gamma-a}{\gamma+a})e^{-t(\frac{a+\gamma}{2})} ]+[(\gamma+a)e^{\gamma(T-t)}+(\gamma-a)-2\gamma e^{\gamma T-(\frac{a+3\gamma}{2})t}  ]  [-\frac{a+3\gamma}{2}e^{\gamma T-(\frac{a+3\gamma}{2})t}+(\frac{\gamma-a}{\gamma+a}) (-\frac{a+\gamma}{2}) e^{-(\frac{a+\gamma}{2})t}   } 
+      {[e^{\gamma T-(\frac{a+3\gamma}{2})t}+(\frac{\gamma-a}{\gamma+a})  e^{(-\frac{a+\gamma}{2})t}            ]^2}      ]      $
+      % 公式打不下！
+      ~\\
+      $$ = \frac{ \frac{(\gamma+a)^2}{2}e^{2\gamma T-(\frac{a+5\gamma}{2} )t } +(\gamma^2+a^2)e^{\gamma T-(\frac{a+3\gamma}{2} )t}    +\frac{2\gamma^2(\gamma-a)}{\gamma+a}e^{\gamma T-(a+2\gamma)t}         +\frac{(\gamma-a)^2}{2}e^{-(\frac{a+\gamma}{2})t} } {[e^{\gamma T-(\frac{a+3\gamma}{2})t}+(\frac{\gamma-a}{\gamma+a})  e^{(-\frac{a+\gamma}{2})t}            ]^2 }                                $$
+  \end{itemize}
+  ~\\
+  \begin{itemize}
+      \item [3*-3]Finally, by using $ dF(t,T)=[-\frac{ \partial A_T (T,t) }{ \partial t}+B_T(t,T)[ab-ar(t)] + \frac{ \partial B_T (T,t) }{ \partial t} r(t)   ]+B_T(t,T)\sigma \sqrt{r(t)}dW_t^Q  $ ,we plug in the components $B_T(t,T) $, $\frac{ \partial A_T (T,t) }{ \partial t} $ and $\frac{ \partial B_T (T,t) }{ \partial t} $ :
+      ~\\
+      $$ \frac{ \partial B (T,t) }{ \partial T} =\frac{4\gamma^2 e^{\gamma(T-t)} } {[(\gamma+a) e^{\gamma(T-t)}+\gamma+a]^2} $$
+      ~\\
+       $$  \frac{ \partial B_T (T,t) }{ \partial t}= \frac{4\gamma^3(\gamma+a)^2e^{3\gamma(T-t)}-4\gamma^3(\gamma-a)^2e^{\gamma(T-t)}} {[(\gamma+a) e^{\gamma(T-t)}+\gamma+a]^4}$$
+      ~\\
+      The $ dF(t,T)=[-\frac{ \partial A_T (T,t) }{ \partial t}+B_T(t,T)[ab-ar(t)] + \frac{ \partial B_T (T,t) }{ \partial t} r(t)   ]+B_T(t,T)\sigma \sqrt{r(t)}dW_t^Q  $ can be simplified to:
+     
+       $$ dF(t,T)=r(t)[\frac{ \partial^2 B(T,t) }{ \partial T \partial t} -a \frac{ \partial B(T,t) }{ \partial T}]dt +\frac{ \partial B(T,t) }{ \partial T}\sigma\sqrt{r(t)}dW_t^Q  $$
+  \end{itemize}
+  
+  
+  
+  
+  
+  
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Verify the no‐arbitrage condition in the HJM model is satisfied}
+\begin{itemize}
+    \item [1)]Due to we have already figured out that the dynamics of Forward rate of the CIR model under Q measure follows:
+    $$ dF(t,T)=r(t)[\frac{ \partial^2 B(T,t) }{ \partial T \partial t} -a \frac{ \partial B(T,t) }{ \partial T}]dt +\frac{ \partial B(T,t) }{ \partial T}\sigma\sqrt{r(t)}dW_t^Q  $$
+~\\
+    \item[2)]Now we shall verify the no-arbitrage conditions of HJM model also hold under the CIR model:
+    \begin{itemize}
+         \item [1.] The drift and diffusion of the forward rates must satisfy the no-arbitrage condition that the drift term of the forward rate F(t,T) under measure Q is equal to:
+    $$ Drift \; Term = \sigma(t,T)\sigma^*(t,T) =\sigma(t,T)\int_t^T \sigma(t,u) du$$ 
+    $$ Diffusion \; Term=\sigma(t,T)$$
+    \item[2.]The drift term of Forward rate dynamics in the CIR model:
+    $$r(t)[\frac{ \partial^2 B(T,t) }{ \partial T \partial t} -a \frac{ \partial B(T,t) }{ \partial T}]$$
+    we conduct further simplicity deduction, ignoring the constant r(t) just for now:
+    $$ \frac{ \partial B_T(T,t) }{ \partial t}-aB_T(t,T) $$
+    \newpage
+    $$=\frac{4\gamma^3(\gamma+a)^2e^{3\gamma(T-t)}-4\gamma^3(\gamma-a)^2e^{\gamma(T-t)}} {[(\gamma+a) e^{\gamma(T-t)}+\gamma-a ]^4} -\frac{4a\gamma e^{\gamma(T-t)}} {[(\gamma+a) e^{\gamma(T-t)}+\gamma-a ]^2}$$
+    
+    $$= \frac{4\gamma^3(\gamma+a)^2e^{3\gamma(T-t)}-4\gamma^3(\gamma-a)^2e^{\gamma(T-t)}- 4a\gamma e^{\gamma(T-t)}[(\gamma+a)e^{\gamma(T-t)}+\gamma-a ]^2} {[(\gamma+a)e^{\gamma(T-t)}+\gamma-a ]^4}         $$
+    
+    $$= \frac{4\gamma^2(\gamma+a)^2e^{3\gamma(T-t)}(\gamma-a)-4\gamma^2(\gamma-a)^2e^{\gamma(T-t)} -8a\gamma^2(\gamma^2-a^2)e^{2\gamma(T-t)} } {  [(\gamma+a)e^{\gamma(T-t)}+\gamma-a ]^4 } $$
+    ~\\
+    Now we only focused on the numerator: 
+    $$ 4\gamma^2(\gamma+a)^2e^{3\gamma(T-t)}(\gamma-a)-4\gamma^2(\gamma-a)^2e^{\gamma(T-t)} -8a\gamma^2(\gamma^2-a^2)e^{2\gamma(T-t)}$$
+    $$=(\gamma+a)e^{\gamma(T-t)} [4\gamma^2(\gamma+a)e^{2\gamma(T-t)} (\gamma-a)-4\gamma^2(\gamma-a)^2-8a\gamma^2(\gamma-a)e^{\gamma(T-t)}]$$
+    $$=  (\gamma+a)e^{\gamma(T-t)}* [4\gamma^2(\gamma-a)] [(\gamma+a)e^{2\gamma(T-t)}-(\gamma-a)-2a\gamma e^{\gamma(T-t)}    ]$$
+    ~\\
+    Then the quantity 
+    $ (\gamma+a)e^{2\gamma(T-t)}-(\gamma-a)-2a\gamma e^{\gamma(T-t)}$ can be further simplified by changing the variable $e^{2\gamma(T-t)} $ as $x^2$, thus this quantity will become:
+    $$ [(\gamma+a) e^{\gamma(T-t)} +(\gamma-a)]*[e^{\gamma(T-t)}-1]$$
+    Finally, the drift term will goes like:
+    $$\frac{4\gamma^2(\gamma^2-a^2)e^{\gamma(T-t)} [(\gamma+a) e^{\gamma(T-t)} +(\gamma-a)]*[e^{\gamma(T-t)}-1]}{[(\gamma+a)e^{\gamma(T-t)}+\gamma-a ]^4}     $$
+    $$= \frac{4\gamma^2[\gamma^2-a^2] [e^{2\gamma(T-t)}-e^{\gamma(T-t)}]}{[(\gamma+a)e^{\gamma(T-t)}+\gamma-a ]^3}$$
+    ~\\
+    Due to $\gamma=\sqrt{a^2+2\sigma^2}$, then $\gamma^2=a^2+2\sigma^2$ so $\gamma^2-a^2=2\sigma^2$
+    ~\\
+    Now we multiple r(t) back thus the drift term:
+    $$=r(t)*\frac{8\gamma^2\sigma^2[e^{2\gamma(T-t)}-e^{\gamma(T-t)}]     }         {[(\gamma+a)e^{\gamma(T-t)}+\gamma-a ]^3}$$
+    ~\\
+    \item[3.]Verify this result is equal to the quantity $\sigma(t,T)\sigma^*(t,T) =\sigma(t,T)\int_t^T \sigma(t,u) du$:
+    \begin{itemize}
+        \item [3.1]The diffusion term of Forward rate CIR model:
+        $$\sigma(t,T)=\sigma \sqrt{r(t)}\frac{4\gamma^2e^{\gamma(T-t)}}{[(\gamma+a)e^{\gamma(T-t)}+\gamma-a ]^2} $$
+        
+        \item [3.2] Solve the $\sigma^*(t,T)$ term:
+        $$\sigma^*(t,T)= \int_t^T \sigma(t,u) du  $$
+        $$=\int_t^T B_T(t,u)*\sigma*\sqrt{r(t)} du        $$
+        Due to the$ \sigma $ and r(t) here are just constant so we can pull them out from the integral:
+        $$= \sigma*\sqrt{r(t)} \int_t^T B_T(t,u) du $$
+        $$= \sigma*\sqrt{r(t)} *B(T,t)$$
+        ~\\
+        
+        \item[3.3] Find out $\sigma(t,T)\sigma^*(t,T)$:
+        $$=\sigma \sqrt{r(t)}\frac{4\gamma^2e^{\gamma(T-t)}}{[(\gamma+a)e^{\gamma(T-t)}+\gamma-a ]^2}*\sigma \sqrt{r(t)}*B(t,T)    $$
+        $$=\sigma^2*B_T(t,T)*r(t)*B(t,T)$$
+        Now we first focused on the term $B_T(t,T)B(t,T)$:
+        $$= \frac{4\gamma^2e^{\gamma(T-t)}}{[(\gamma+a)e^{\gamma(T-t)}+\gamma-a ]^2}* \frac{ 2(e^{\gamma(T-t)}-1)    } { (\gamma+a)(e^{\gamma(T-t)}-1 ) +2\gamma  }  $$
+        $$=\frac{8\gamma^2[e^{2\gamma(T-t)}-e^{\gamma(T-t)}]} {[(\gamma+a)e^{\gamma(T-t)}+\gamma-a ]^3}         $$
+        ~\\
+        Finally, by multiply back $\sigma^2$ and r(t) the term $\sigma(t,T)\sigma^*(t,T) $ will yield:
+        $$ =r(t)*\frac{8\gamma^2\sigma^2[e^{2\gamma(T-t)}-e^{\gamma(T-t)}]     } {[(\gamma+a)e^{\gamma(T-t)}+\gamma-a ]^3}$$
+        
+    \end{itemize}
+\newpage
+    The result of $\sigma(t,T)\sigma^*(t,T) $is equals to the CIR's model's drift term "$r(t)[\frac{ \partial^2 B(T,t) }{ \partial T \partial t} -a \frac{ \partial B(T,t) }{ \partial T}]$" with the quantity:
+    $$ r(t)*\frac{8\gamma^2\sigma^2[e^{2\gamma(T-t)}-e^{\gamma(T-t)}]     } {[(\gamma+a)e^{\gamma(T-t)}+\gamma-a ]^3}$$
+    ~\\
+   
+    
+    \end{itemize}
+    \textbf{Therefore, the no-arbitrage condition under HJM MODEL also hold for CIR model.}
+    
+\end{itemize}
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-----MC result-----%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+\newpage
+\section{The MC simulation plots}
+\subsection{CIR model's short rate }
+\begin{figure}[htbp]
+\centering
+
+\subfigure[compare V-CIR .]{
+\begin{minipage}[t]{1\linewidth}
+\centering
+\includegraphics[width=4in]{compare V-CIR using STD_method.png}
+%\caption{M=1000}
+\end{minipage}%
+}
+\end{figure}
+It appears that when the simulation steps and paths are the same, the CIR short rate model is less diverse compares to the Vasicek Model.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\subsection{Implement variance reduction methods}
+\begin{itemize}
+    \item [1)]When implementing variance reduction method with reduction parameter b($ \rho(X,Y)$) equals to "-1", there appears a single line which indicates perfect reduction. Thus, the result may be perfect but not realistic.
+ \begin{figure}[H]
+\centering
+
+\subfigure{
+\begin{minipage}[t]{0.4\linewidth}
+\centering
+\includegraphics[width=4in]{the reduction_par=-1.png}
+\end{minipage}%
+}
+\end{figure}   
+
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{itemize}
+    \item [2)]Then changed the reduction parameters to "-o.8"
+ \begin{figure}[H]
+\centering
+
+\subfigure{
+\begin{minipage}[t]{0.4\linewidth}
+\centering
+\includegraphics[width=4in]{the reduction_par=-0.8.png}
+\end{minipage}%
+}
+\end{figure}   
+The reduction method is more effective for CIR model which indeed get rid of bunch of unrealistic rate values but still the variation for Vasicek Model is high.
+\end{itemize}
+
+~\\
+
+\subsection{Bond price and Yield under CIR model}
+The bond price will finally converge to 1 which is the unit par value for the zero coupon bond. However, the bond price under CIR model tends a upward convergence while under Vasicek Model the trend is similiar to mean reversion convergence.
+
+
+
+
+\begin{figure}[H]
+	\begin{minipage}[t]{0.5\textwidth}
+		\centering
+		\includegraphics[scale=0.35]{Short-Rates,Bond Prices and Bond Yield for CIR Model.png}
+		\caption{Short-Rates,Bond Prices and Bond Yield for CIR Model.}
+	\end{minipage}
+	\qquad
+	\begin{minipage}[t]{0.5\textwidth}
+		\centering
+		\includegraphics[scale=0.35]{Short-Rates,Bond Prices and Bond Yield for V Model.png}
+		\caption{ for Vasicek Model.}
+	\end{minipage}
+\end{figure}
+
+
+
+
+
+\newpage
+\subsection{The Term Structure}
+
+\begin{figure}[H] 
+    \centering 
+    \includegraphics[width=1\textwidth]{Term Structure of Yields for CIR Model.png}
+\caption{ Term Structure of Yields for CIR Model}
+ \end{figure}
+Due to we choose the b(long time mean reversion rate) equals to 0.4, so the figure demonstrates that the Term Structure will converge approximately to 0.4 as the increase of Time to Maturity.
+~\\
+
+Now, if the value of b has been changed then the converge trend will also been changed at the same time:
+
+
+\begin{figure}[H] 
+    \centering 
+    \includegraphics[width=1\textwidth]{Term Structure with b=0.1.png}
+\caption{ Term Structure with b=0.1}
+ \end{figure}
+%之后加一个对比图; 档b的值改变时
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+~\\
+\subsection{The simulation result for CIR model under HJM no-arbitrage condition}
+
+\begin{itemize}
+    \item [1)]Due to the CIR model containing the fluctuation of short rate r(t) when constructs forward rate, so the variation of forward rate under CIR model is more stable and the resulting rate is more realistic without negative outcomes comparing to the Vasicek model when implementing the same parameters for simulating. 
+\end{itemize}
+
+\begin{figure}[H]
+	\begin{minipage}[t]{0.5\textwidth}
+		\centering
+		\includegraphics[scale=0.35]{forward-short-v-low.png}
+		\caption{under Vasicek model.\label{fig:1}}
+	\end{minipage}
+	\qquad
+	\begin{minipage}[t]{0.5\textwidth}
+		\centering
+		\includegraphics[scale=0.35]{FORWARD-SHORT_compare.png}
+		\caption{under CIR model.\label{fig:2}}
+	\end{minipage}
+\end{figure}
+
+~\\
+
+\begin{itemize}
+    \item [2)]Also, the drift term and diffusion term are different from the Vasicek model under HJM model due to the components A(t,T) and B(t,T) of the CIR model are constructed by containing the change of each steps of r(t), which simulated by the short model. Therefore, the drift and diffusion are bunch of paths with horizontal-axis of time (number of steps).
+\end{itemize}
+
+\begin{figure}[H]
+	\begin{minipage}[t]{0.8\textwidth}
+		\centering
+		\includegraphics[scale=0.3]{drift and diffusion term}
+		\caption{\label{fig:1}}
+	\end{minipage}
+\end{figure}
+
+
+
+
+\newpage
+\begin{itemize}
+    \item [3)] In order to find the relationship and the changing pattern of drift and diffusion term, the flowing plots are showed by taking the average of the matrix of drift and diffusion term by summing up each row then divided by the number of paths:
+\end{itemize}
+\begin{figure}[H]
+	\begin{minipage}[t]{0.8\textwidth}
+		\centering
+		\includegraphics[scale=0.4]{drift and diffusion term_mean.png}
+		\caption{The average of drift and diffusion terms\label{fig:1}}
+	\end{minipage}
+\end{figure}
+~\\
+The diffusion term will be increased with approaching to the "T" because the comprise of "r(t)=F(t,T)" though when the uncertainty (diffusion) of forward rate variation will decreased.
+~\\
+
+\section{Part 3}
+\subsection{The method for estimating the parameters in CIR model}
+\begin{itemize}
+    \item [(1.)]According to Appendix A, I used the regression to find the initial short rate r(0). 
+\end{itemize}
+\begin{itemize}
+    \item [(2.)] Setting arbitrary parameters $\sigma $, a and b then used yields given compares to the yields calculated by CIR model which will result an error:
+    $$ error=[(Y_M(0,T)-Y_{CIR}(0,T)]^2$$
+    Then iterate different yields to compute the error term.
+\end{itemize}
+\begin{itemize}
+    \item [(3.)]Finally, using solver to minimize the summation of all error terms by variate the parameters: $\sigma $, a and b.
+    $$Summation=\sum_{t}^{T} error$$
+    t and T will according to the given excel form.
+ 
+\end{itemize}
+  \begin{itemize}
+        \item [*] The constrains need to be mentioned:
+        \begin{itemize}
+            \item [1.] a, b, $\sigma$ and initial rate are non-negative constants.
+        \end{itemize}
+        \begin{itemize}
+            \item [2.] the initial rate must smaller than one month yield.
+        \end{itemize}
+        \begin{itemize}
+            \item [3.]$\sigma^2\leq ab $
+        \end{itemize}
+    \end{itemize}
+
+
+
+
+
+
+
+
+
+\end{document}
+
+
+

@@ -1,0 +1,322 @@
+\documentclass[14pt]{extarticle}
+
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{graphicx} 
+\usepackage{tabularx}
+\usepackage{url}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{CJKutf8}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{caption}
+\usepackage{subfigure}
+
+\newtheorem{question}{Question}
+\newtheorem{activity}{Activity}
+\newtheorem{theorem}{Theorem}
+\newtheorem{objective}{Objective}
+\newtheorem{lemma}{Lemma}
+\newtheorem{fact}{Fact}
+\newtheorem{claim}{Claim}
+\newtheorem{corollary}{Corollary}
+\newtheorem{prop}{Proposition}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{definition}{Definition}
+\newtheorem{obs}{Observation}
+
+
+\textheight=22.5cm
+\topmargin=-1cm
+\oddsidemargin=5mm 
+\textwidth=16cm
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%===========================================================================%%
+
+\pagenumbering{gobble}
+\title{\includegraphics{XJTLULOGO.png} \\ \vspace{20mm} Financial Engineering MTH319 \\  Coursework Assignment 2\ \vspace{10mm}
+
+\vspace{20mm}}
+\date{\today}
+\author{Yu Kong ID 1718810 }
+
+
+\begin{document}
+
+
+\maketitle
+
+\newpage
+
+\abstract{ \setlength{\baselineskip}{20pt}
+
+
+Firstly, this coursework used the Monte Carlo simulation to simulate the CIR short-rate model in a standard approach and variance reduction method respectly with the parameters $\sigma$,a and b estimated from the given "Government Bond Yield"~\\
+
+Secondly, the dynamics of bond price, yields and the term structure are also been estimated with plots by using the result of short-rate paths conducted in first part.~\\
+
+Finally, based on the non-arbitrage condition of HJM model and the dynamic expression of short-term interest rate under CIR model, the drift term and diffusion term of Forward interest rate are deduced. Moreover, 
+
+}
+
+\newpage 
+\tableofcontents
+\newpage
+
+\pagenumbering{arabic}
+
+\section{Part 1}
+
+\subsection{General methodology}\setlength{\baselineskip}{20pt}
+1. construct the ‘EulerMilsteinMCStock’ function for simulating the price of the Stock by formed a matrix ‘S’ which column denoted by number of paths (M) and row is denoted by the number of steps (N). we have two different schemes Euler and Milstein to conduct simulation then we use variable ‘ST’ to store the stock price when maturity.
+
+scheme Euler:
+$$  \tilde{X}(t_{i+1})  =  \tilde{X}(t_{i}) +\frac{1}{2} (\mu (t_i) ,  \tilde{X}^\ast (t_{i+1})   \Delta t_i  +\sigma(\tilde{X}(t_{i})   \Delta W(t_i))    )  $$
+
+
+scheme Milstein:\\
+$$    \tilde{X}(t_{i+1})  =   \tilde{X}(t_{i}) + \mu (t_i,  \tilde{X}(t_{i}) )   \Delta t_i + \sigma(\tilde{X}(t_{i})   \Delta W(t_i)) +  \frac{1}{2}  \sigma(t_i , \tilde{X}(t_{i})  )  \sigma\prime ( t_i,  \tilde{X}(t_{i}) )  (  \Delta W( t_i)^2 - \Delta t_i ) $$
+
+
+2. construct the ‘MCoptionprice ’ function to simulate the option price by discounting the payoffs over all the simulated paths.\\
+
+(1) The principal for working out the option price is:
+$$ C_0(K,t_k)=e^{rt_k}\{   \frac{1}{n_{paths}}  \sum_{j=i}^{n_{paths}}  {[S(t_k,\omega_j)-K]}^+  \} $$
+(1)The option result: 
+the price of option priced by the Monte Carlo simulation under number of paths equal to 5000 is 25.804981672894446
+
+
+
+\newpage
+\subsection{plot result}
+the stock price paths:\\ 
+\begin{figure}[h] 
+    \centering 
+    \includegraphics[width=1\textwidth]{simulatedstockprice.png} 
+\caption{ simulated stock price}
+ \end{figure}
+\\
+
+\section{Part 2}
+\subsection{Changing the number of paths}
+When the number of paths increased to 1000,3000, 50000 with other setting unchanged, the  price of option has benn listed as below:\\
+when the number of paths=1000
+the price of the option is:24.330631797815634\\
+when the number of paths=3000
+the price of the option is: 26.27119315740072\\
+when the number of paths=5000
+the price of the option is: 25.804981672894446\\
+when the number of paths= 8000
+the price of the option is: 26.23909224225027
+
+
+\newpage
+\subsection{corresponding plots}
+
+\begin{figure}[htbp]
+\centering
+
+\subfigure[M=1000.]{
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\includegraphics[width=4in]{m=1000.png}
+%\caption{M=1000}
+\end{minipage}%
+}%
+\subfigure[M=3000.]{
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\includegraphics[width=4in]{m=3000.png}
+%\caption{fig2}
+\end{minipage}%
+}%
+
+\subfigure[M=5000.]{
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\includegraphics[width=4in]{m=5000.png}
+%\caption{fig2}
+\end{minipage}
+}%
+\subfigure[M=8000.]{
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\includegraphics[width=4in]{m=8000.png}
+%\caption{fig2}
+\end{minipage}
+}%
+
+\centering
+\caption{ Changing the number of paths}
+\end{figure}
+
+
+
+~\\
+\subsection{Changing the number of steps}
+When the number of Steps increased to 500,1000, 40000 with other setting unchanged, the  price of option has benn listed as below:\\
+when the number of Steps=500
+the price of the option is: 51.05317730375977\\
+when the number of Steps= 1000
+the price of the option is: 95.35600081612247\\
+when the number of Steps= 4000
+the price of the option is: 691.5863595902179\\
+
+\subsection{corresponding plots}
+
+\begin{figure}[htbp] 
+    \centering 
+    \includegraphics[width=1\textwidth]{n=500 1000.png}
+\caption{ when the number of steps=500 and 1000}
+ \end{figure}
+
+
+\begin{figure}[htbp] 
+    \centering 
+    \includegraphics[width=1\textwidth]{n=4000.png}
+\caption{when the number of steps=4000}
+ \end{figure}
+
+
+
+
+\newpage
+\section{Part 3}
+\subsection{The probability functions of strike price at maturity}
+the figure below illustrates the culumative probability and the density probability:
+\begin{figure}[h] 
+    \centering 
+    \includegraphics[width=1\textwidth]{prob.png}
+ \end{figure}
+
+
+
+\section{Part 4}
+\subsection{The pricipal of delta hedging}
+
+Delta is the slope (first derivative) of the underlying curve. A delta hedge protects only against small movements in the price of the underlying. An example of a delta hedge is when buying a put, which gives a  negative delta and positive gamma, and then buy enough of the underlying to zero out the total delta. \\
+This hedge does not protect against larger movements of the underlying. When the underlying moves, the non-zero gamma will change the delta, causing us to need to re-hedge. 
+
+
+$$Delta(\Delta)=\frac {\partial C(t)} {\partial S(t)} =\frac{\partial}{\partial S(t)} [S(t) N(d1)]-e^{r(T-t)} K  \frac{\partial}{\partial S(t)}[N(d2)]   $$
+
+
+$$\phi(d2)=\frac  {S(t)e^{r(T-t)}}{K}  $$
+
+\subsection{The result of delta hedging}
+when the simulation number of paths equals to 5000, the strategy of trading will be :\\
+the amount of option A: short by one unit\\
+the amount of Stock holding: 0.644767279 unit\\
+the amount of bank account (or Bond) holding: -40.22844954763912 unit\\
+the delta is: 0.644767\\
+the gamma is: 0.006583\\
+and the 'k' will be zero due to delta-nuetral-hedging.
+
+\begin{figure}[h] 
+    \centering 
+    \includegraphics[width=1\textwidth]{nd-gnd.png}
+\caption{ the replication error of delta and delta-gamma hedging strategy}
+ \end{figure}
+
+
+\newpage
+\subsection{The pricipal of delta-gamma hedging}
+Gamma is the second derivative of the P\&L/underlying curve. A gamma hedge protects only against small movements of gamma; gamma will move when either the underlying or its implied volatility move. An example of a gamma hedge is when we buy a put, which gives us negative delta and positive gamma, then sell a call to zero out our gamma but give the even more negative delta. This exposes us to large movements of the underlying, so we will likely want to then buy enough of the underlying to zero out  delta. \\
+A gamma hedge does not protect against larger movements of gamma, because the put and call each have non-zero "speed".
+
+$$Gamma(\Gamma)=  \frac{\partial^2 C(t)}  {\partial^2 S(t)}   =\frac{\partial}{\partial} (\frac{\partial C(t)}   {S_t})       =   \frac{\partial }{\partial S_t}(N(d_1))       $$
+$$    =\phi(d_1) \frac{1}{S_t} \frac{ 1 }{\sigma \sqrt{T-t}  }  $$
+
+
+where the $\phi(x)$ =$ \frac{1} {\sqrt{2\pi}} e^{-\frac{ x^2} {2}}$
+\subsection{The result of delta-gamma hedging}
+when the simulation number of paths equals to 5000, the strategy of trading will be :\\
+the amount of option A: short by one unit\\
+the amount of Stock holding :-0.10586423018360214 unit\\
+the amount of bank account (or Bond) holding: 3.1464404826842234 \\
+the delta is: 0.624414 \\
+the gamma is: 0.005476\\
+therefore, using the delta-gamma hedging the change of delta((first derivative) of the P\&L/underlying curve) is useful.\\
+and the 'k' (the mount of option B used to hedging the change in the) is: 1.2021371188598209 unit
+
+
+
+\subsection{Analysis of replication Error }
+
+When the sigma=0.02 (assuming the cash unit is \$): \\
+This is the situation when the market is almost risk free and under this particular condition, the plot of simulated stock price is much more converged over all paths and without obvious fluctuated and volatile pricing paths showing.\\
+
+
+
+
+
+The plot of replication error of delta hedging strategy and delta-gamma hedging strategy are similar under the stock price changing. They all increased rapidly when stock price lower than 100\$ which is the strike price and then the replication error of delta-gamma hedging strategy slow the speed of increase while the replication error of delta hedging strategy starts to fall when stock price hits 100\$.\\
+
+\newpage
+\begin{figure}[h] 
+    \centering 
+    \includegraphics[width=1\textwidth]{Stock PriceReplication Errors (in cash units)0.02.png}
+ \end{figure}
+
+The average replication error’s pattern of delta hedging strategy and delta-gamma hedging strategy are almost the same under nearly risk free assumption which indicates that due to the uncertainty of the market is low so the change of stock price ($\Delta$)and the rate of the change ($\Gamma$)should be close due to the sigma (volatility) is low ( $\Downarrow$ is the figure).\\
+
+\begin{figure}[h] 
+    \centering 
+    \includegraphics[width=1\textwidth]{Paths(M)Averaged Replication Errors (in cash units)0.02.png}
+ \end{figure}
+
+
+When the sigma=0.4 (assuming the cash unit is \$): \\
+There will be a spike of replication error of both delta hedging strategy and delta-gamma hedging strategy when the stock hits 100 but over all the delta-gamma hedging strategy’s replication error is much more stable and smaller than the one of delta hedging strategy.
+For average replication error, with the number of simulation paths increased, the average replication error for delta-gamma hedging is stable around 4\$ while the average replication error for delta hedging strategy is fluctuated but the level is lower which no more than 2\$ (plots are displayed below $\Downarrow$ ).\\
+
+\begin{figure}[h] 
+    \centering 
+    \includegraphics[width=1\textwidth]{Stock PriceReplication Errors (in cash units)4.png}
+ \end{figure}
+
+\begin{figure}[h] 
+    \centering 
+    \includegraphics[width=1\textwidth]{Paths(M)Averaged Replication Errors (in cash units)4.png}
+ \end{figure}
+ 
+
+
+
+When the sigma=0.8 (assuming the cash unit is \$): \\
+This might be a extreme case due to very risky market volatility setting, and in this market there will be a spike of replication error of both delta hedging strategy and delta-gamma hedging strategy when the stock around 100 but the delta hedging strategy’s replication error is far more large compare to the delta-gamma hedging strategy. Moreover, the average replication error of delta hedging strategy is more fluctuated when sigma equals to 0.4. However, the average replication error of delta-gamma hedging is 3\$ which is smaller compares to the situation under sigma=0.4.
+
+
+\begin{figure}[htbp] 
+    \centering 
+    \includegraphics[width=1\textwidth]{Paths(M)Averaged Replication Errors (in cash units)8.png}
+ \end{figure}
+
+\begin{figure}[htbp] 
+    \centering 
+    \includegraphics[width=1\textwidth]{Stock PriceReplication Errors (in cash units)8.png}
+ \end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
+
+
+
